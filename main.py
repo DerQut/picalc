@@ -7,7 +7,6 @@ running = True
 
 FPS = 24
 
-steps_to_take = 10000000
 steps_taken = 0
 
 rows, cols = (480, 480)
@@ -151,3 +150,4 @@ if __name__ == '__main__':
 
         pygame.display.update()
         clock.tick(FPS)
+        print(steps_taken)
