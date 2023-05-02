@@ -5,6 +5,8 @@ import random
 
 running = True
 
+FPS = 24
+
 steps_to_take = 10000000
 steps_taken = 0
 
@@ -14,6 +16,9 @@ all_points = [[0 for i in range(cols)] for j in range(rows)]
 points_in_circle = 0
 
 frame = 0
+
+n_steps_values = []
+n_steps = [10, 100, 1000, 10000, 100000, 1000000]
 
 
 def blit_all():
@@ -52,7 +57,50 @@ def new_point():
         all_points[i][j] = 2
 
     steps_taken = steps_taken + 1
-    print(steps_taken)
+    #print(steps_taken)
+
+
+def blit_n_steps():
+    global n_steps_values
+    n_steps_list = []
+
+    if len(n_steps_values) > 0:
+        n_10_pi = small_font.render(("n=10;       π=" + str(n_steps_values[0])), False, (0, 0, 0))
+        n_steps_list.append(n_10_pi)
+    if len(n_steps_values) > 1:
+        n_100_pi = small_font.render(("n=100;      π=" + str(n_steps_values[1])), False, (0, 0, 0))
+        n_steps_list.append(n_100_pi)
+    if len(n_steps_values) > 2:
+        n_1000_pi = small_font.render(("n=1000;     π=" + str(n_steps_values[2])), False, (0, 0, 0))
+        n_steps_list.append(n_1000_pi)
+    if len(n_steps_values) > 3:
+        n_10000_pi = small_font.render(("n=10000;    π=" + str(n_steps_values[3])), False, (0, 0, 0))
+        n_steps_list.append(n_10000_pi)
+    if len(n_steps_values) > 4:
+        n_100000_pi = small_font.render(("n=100000;   π=" + str(n_steps_values[4])), False, (0, 0, 0))
+        n_steps_list.append(n_100000_pi)
+    if len(n_steps_values) > 5:
+        n_1000000_pi = small_font.render(("n=1000000;  π=" + str(n_steps_values[5])), False, (0, 0, 0))
+        n_steps_list.append(n_1000000_pi)
+    if len(n_steps_values) > 6:
+        n_10000000_pi = small_font.render(("n=10000000; π=" + str(n_steps_values[6])), False, (0, 0, 0))
+        n_steps_list.append(n_10000000_pi)
+
+
+    i=0
+    while i< len(n_steps_list):
+        screen.blit(n_steps_list[i], (720, 200+30*i))
+        i=i+1
+
+
+def get_n_steps(pi_value):
+    global steps_taken
+    global n_steps_values
+    global n_steps
+    for x in n_steps:
+        if steps_taken == x:
+            n_steps_values.append(str(pi_value))
+
 
 
 if __name__ == '__main__':
@@ -64,7 +112,11 @@ if __name__ == '__main__':
     blue_tag = pygame.image.load("blue_tag3.png").convert_alpha()
 
     pygame.font.init()
-    my_font = pygame.font.SysFont('Comic Sans MS', 30)
+
+    main_font = pygame.font.SysFont('Courier New', 40)
+    small_font = pygame.font.SysFont('Courier New', 30)
+
+    clock = pygame.time.Clock()
 
     while running:
 
@@ -73,18 +125,24 @@ if __name__ == '__main__':
 
 
         blit_all()
+        new_point()
 
-        frame = frame+1
-        if frame == 1:
-            new_point()
-            frame = 0
 
         pi = float(4*points_in_circle/steps_taken)
+        pi_list = list(str(pi))
 
-        str_pi = ("π="+str(pi))
+        if len(pi_list) < 18:
+            while len(pi_list) < 18:
+                pi_list.append("0")
 
-        text_surface = my_font.render(str_pi, False, (0, 0, 0))
-        screen.blit(text_surface, (0, 0))
+        str_pi = ("π="+ "".join(pi_list))
+
+        current_pi = main_font.render(str_pi, False, (0, 0, 0))
+        screen.blit(current_pi, (720, 124))
+
+        get_n_steps(pi)
+
+        blit_n_steps()
 
         events = pygame.event.get()
         for event in events:
@@ -92,3 +150,4 @@ if __name__ == '__main__':
                 running=False
 
         pygame.display.update()
+        clock.tick(FPS)
