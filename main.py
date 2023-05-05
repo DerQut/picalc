@@ -85,7 +85,7 @@ def new_point():
     steps_taken = steps_taken + 1
 
 
-def blit_n_steps(): #yes it's sloppy and bad and I don't care
+def blit_n_steps(): #yes it's sloppy and bad and I don't care lmao
     global n_steps_values
     n_steps_list = []
 
