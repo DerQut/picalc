@@ -4,34 +4,61 @@ import random
 
 running = True
 
-FPS = 24
+def debug(FPS_cap, n_step_printing):
+    global steps_taken
+
+    if FPS_cap != 0:
+        clock.tick(FPS_cap)
+
+    if n_step_printing == True:
+        print(steps_taken)
+
 
 steps_taken = 0
+pi=0
 
 rows, cols = (480, 480)
 all_points = [[0 for i in range(cols)] for j in range(rows)]
 
 points_in_circle = 0
 
-frame = 0
-
 n_steps_values = []
 n_steps = [10, 100, 1000, 10000, 100000, 1000000]
 
 
-def blit_all():
+def blit_all(is_optimised):
     global all_points
+    global steps_taken
+    global pi
 
-    i=0
-    while i<480:
-        j=0
-        while j<480:
-            if all_points[i][j]==1:
-                screen.blit(red_tag, (120+i, 120+j))
-            if all_points[i][j]==2:
-                screen.blit(blue_tag, (120+i, 120+j))
-            j=j+1
-        i=i+1
+    key = 1
+
+    if is_optimised == True:
+        if steps_taken>1000:
+            key = random.randint(1,50)
+        elif steps_taken>500:
+            key = random.randint(1,25)
+        if steps_taken>250:
+            key = random.randint(1,5)
+        elif steps_taken>100:
+            key = random.randint(1,2)
+
+
+    if key == 1:
+        i=0
+        while i<480:
+            j=0
+            while j<480:
+                if all_points[i][j]==1:
+                    screen.blit(red_tag, (120+i, 120+j))
+                if all_points[i][j]==2:
+                    screen.blit(blue_tag, (120+i, 120+j))
+                j=j+1
+            i=i+1
+
+        blit_n_steps()
+        blit_pi(pi)
+        pygame.display.update()
 
 def new_point():
     global all_points
@@ -42,10 +69,8 @@ def new_point():
     i=random.randint(0,479)
     j=random.randint(0,479)
 
-    x=i
-    y=479-j
 
-    distance = float((x**2 + y**2)**0.5)
+    distance = float((i**2 + (479-j)**2)**0.5)
 
     if distance < float(480):
         points_in_circle = points_in_circle + 1
@@ -55,10 +80,9 @@ def new_point():
         all_points[i][j] = 2
 
     steps_taken = steps_taken + 1
-    #print(steps_taken)
 
 
-def blit_n_steps():
+def blit_n_steps(): #yes it's sloppy and bad and I don't care
     global n_steps_values
     n_steps_list = []
 
@@ -95,10 +119,23 @@ def get_n_steps(pi_value):
     global steps_taken
     global n_steps_values
     global n_steps
+
     for x in n_steps:
         if steps_taken == x:
             n_steps_values.append(str(pi_value))
 
+
+def blit_pi(pi_value):
+
+    pi_list = list(str(pi_value))
+    if len(pi_list) < 18:
+        while len(pi_list) < 18:
+            pi_list.append("0")
+
+    str_pi = ("π=" + "".join(pi_list))
+
+    current_pi = main_font.render(str_pi, False, (0, 0, 0))
+    screen.blit(current_pi, (720, 124))
 
 
 if __name__ == '__main__':
@@ -122,31 +159,20 @@ if __name__ == '__main__':
         screen.blit(main_graphics, (124,124))
 
 
-        blit_all()
+        blit_all(True)
         new_point()
 
 
         pi = float(4*points_in_circle/steps_taken)
-        pi_list = list(str(pi))
-
-        if len(pi_list) < 18:
-            while len(pi_list) < 18:
-                pi_list.append("0")
-
-        str_pi = ("π="+ "".join(pi_list))
-
-        current_pi = main_font.render(str_pi, False, (0, 0, 0))
-        screen.blit(current_pi, (720, 124))
 
         get_n_steps(pi)
 
-        blit_n_steps()
+
 
         events = pygame.event.get()
         for event in events:
             if event.type == pygame.WINDOWCLOSE:
                 running=False
 
-        pygame.display.update()
-        clock.tick(FPS)
-        print(steps_taken)
+
+        debug(0, True)
