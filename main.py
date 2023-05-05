@@ -35,7 +35,7 @@ def blit_all(is_optimised):
 
     if is_optimised == True:
         if steps_taken>1000:
-            key = random.randint(1,50)
+            key = random.randint(1, int(steps_taken/20))
         elif steps_taken>500:
             key = random.randint(1,25)
         if steps_taken>250:
@@ -56,9 +56,12 @@ def blit_all(is_optimised):
                 j=j+1
             i=i+1
 
-        blit_n_steps()
-        blit_pi(pi)
-        pygame.display.update()
+        pygame.display.update(rect_left)
+
+    blit_n_steps()
+    blit_pi(pi)
+    pygame.display.update(rect_right)
+
 
 def new_point():
     global all_points
@@ -150,6 +153,9 @@ if __name__ == '__main__':
 
     main_font = pygame.font.SysFont('Courier New', 40)
     small_font = pygame.font.SysFont('Courier New', 30)
+
+    rect_left = pygame.Rect((0, 0), (608, 720))
+    rect_right = pygame.Rect((608, 0), (672, 720))
 
     clock = pygame.time.Clock()
 
