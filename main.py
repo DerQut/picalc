@@ -1,6 +1,14 @@
 import pygame
 import random
 
+FPS = 10
+bool_optimise_blitting = False
+bool_ptint_n_steps = False
+bool_print_success = False
+bool_play_sound = True          #use with bool_optimise_blitting=False and FPS=10 for best effect :3
+
+
+
 
 running = True
 
@@ -26,7 +34,7 @@ n_steps_values = []
 n_steps = [10, 100, 1000, 10000, 100000, 1000000]
 
 
-def blit_all(is_optimised):
+def blit_all(is_optimised, show_success):
     global all_points
     global steps_taken
     global pi
@@ -34,17 +42,15 @@ def blit_all(is_optimised):
     key = 1
 
     if is_optimised == True:
-        if steps_taken>1000:
-            key = random.randint(1, int(steps_taken/20))
-        elif steps_taken>500:
-            key = random.randint(1,25)
-        if steps_taken>250:
-            key = random.randint(1,5)
-        elif steps_taken>100:
+        if steps_taken<100:
             key = random.randint(1,2)
+        else:
+            key = random.randint(1, int(steps_taken / 50))
 
 
     if key == 1:
+        if show_success == True:
+            print("key passed!")
         i=0
         while i<480:
             j=0
@@ -67,20 +73,25 @@ def new_point():
     global all_points
     global steps_taken
     global points_in_circle
+    global bool_play_sound
 
 
-    i=random.randint(0,479)
-    j=random.randint(0,479)
+    i=random.randint(1,480)
+    j=random.randint(1,480)
 
 
-    distance = float((i**2 + (479-j)**2)**0.5)
+    distance = float((i)**2 + (j)**2)-0.5
 
-    if distance < float(480):
+    if distance < 480**2:
         points_in_circle = points_in_circle + 1
-        all_points[i][j] = 1
+        all_points[i-1][j-1] = 1
+        if bool_play_sound == True:
+            pygame.mixer.Sound.play(sound_in_circle)
 
     else:
-        all_points[i][j] = 2
+        all_points[i-1][j-1] = 2
+        if bool_play_sound == True:
+            pygame.mixer.Sound.play(sound_out_of_circle)
 
     steps_taken = steps_taken + 1
 
@@ -157,7 +168,13 @@ if __name__ == '__main__':
     rect_left = pygame.Rect((0, 0), (608, 720))
     rect_right = pygame.Rect((608, 0), (672, 720))
 
-    clock = pygame.time.Clock()
+    if FPS != 0:
+        clock = pygame.time.Clock()
+
+    if bool_play_sound == True:
+        pygame.mixer.init()
+        sound_in_circle = pygame.mixer.Sound("beep.wav")
+        sound_out_of_circle = pygame.mixer.Sound("boop.wav")
 
     while running:
 
@@ -165,7 +182,7 @@ if __name__ == '__main__':
         screen.blit(main_graphics, (124,124))
 
 
-        blit_all(True)
+        blit_all(bool_optimise_blitting, bool_print_success)
         new_point()
 
 
@@ -181,4 +198,4 @@ if __name__ == '__main__':
                 running=False
 
 
-        debug(0, True)
+        debug(FPS, bool_ptint_n_steps)
